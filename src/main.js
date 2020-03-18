@@ -4,7 +4,7 @@ import router from './router'
 import '@/permission' // 权限拦截模式
 import store from './store'
 import Vant from 'vant'// 引入vant
-import 'vant/lib/index.css'// 引入样式
+import 'vant/lib/index.less'// 引入样式  想修改某个变量
 import '@/styles/index.less'
 import 'amfe-flexible'
 
