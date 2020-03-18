@@ -1,18 +1,19 @@
 // 请求管理工具
 import axios from 'axios'
-import JSONBig from 'json-bigint'// 引入大数字插件
-import store from '@/store'// 引入vuex中的store实例对象 相当于组件的this.$store
-import router from '@/router'
+import JSONBig from 'json-bigint' // 引入大数字插件
+import store from '@/store' // 引入vuex中的store实例对象 相当于 组件中的 this.$store
+import router from '@/router' // 引入router对象
 // axios.defaults 是对原有默认值进行修改
 // axios.create() 相当于 new 了一个新的axios实例
 const instance = axios.create({
 // 构造函数 传入一些配置 同defaults
   baseURL: 'http://ttapi.research.itcast.cn/app/v1_0',
   //   transformResponse函数后台响应回来 但是还未进入到axios的响应拦截是执行 数组里可以写多个的处理函数
-  transformResponse: [function (date) {
+  transformResponse: [function (data) {
     // date就是后端响应回来的字符串
-    return date ? JSONBig.parse(date) : {}
+    return data ? JSONBig.parse(data) : {}
   }]
+
 })// 创建一个axios实例
 
 // 注入token 应该在请求之前 即请求拦截器
@@ -21,21 +22,21 @@ instance.interceptors.request.use(function (config) {
   // 成功的时候 如何处理
   // 读取配置信息 给配置信息中注入token
   if (store.state.user.token) {
-    config.headers.Authorization = `Bearer ${store.state.user.token}`// 讲token同意注入headers
+    config.headers.Authorization = `Bearer ${store.state.user.token}` // 将token 统一注入到headers中
   }
-  return config// 返回配置
+  return config // 返回配置
 }, function (error) {
   // 直接返回profile错误
-  return Promise.reject(error)// 返回错误 这样的话会直接进入到axios的catch中
+  return Promise.reject(error) // 返回错误 这样的话会直接进入到axios的catch中
 })
 // 用响应器拦截 出 返回结果的数据 讲多嵌套的结果结构出来
 instance.interceptors.response.use(function (response) {
   // Response已经被axios包了一层数据 data才是之前出来的数据
   try {
-    return Response.data.data// 如果成功则返回
+    return response.data.data // 如果成功则返回  如果两层可以解开 就返回两层
   } catch (error) {
     //   如果失败 说明 Response.data不存在
-    return Response.data
+    return response.data
   }
 }, async function (error) {
   // 如果请求失败或者失效或其他错误 会进入到响应拦截器的错误区域
@@ -50,7 +51,7 @@ instance.interceptors.response.use(function (response) {
       path: '/login', // 地址
       query: {
         // 需要传递的query参数
-        redirectUrl: router.currentRoute.fullpath// 表示登录页需要跳转的地址
+        redirectUrl: router.currentRoute.fullPath// 表示登录页需要跳转的地址
       }
     }
     // 如果状态码为401 就是token失效
@@ -63,33 +64,35 @@ instance.interceptors.response.use(function (response) {
       // 需要用没有拦截器的axios 来发 刷新token的请求
       try {
         const result = await axios({
-          method: 'put',
-          url: 'http://ttapi.research.itcast.cn/app/v1_0/authorizations',
-          headers: { Authorization: `Beaer ${store.state.user.refresh_token}` }
+          method: 'put', // 请求类型
+          url: 'http://ttapi.research.itcast.cn/app/v1_0/authorizations', // 完成的url地址
+          headers: { Authorization: `Bearer ${store.state.user.refresh_token}` } // 在请求头中注入refresh_token
         })
         // result.data.data.token// 新token
         // 如果成功了 应该更新失效的token
         // 直接更新vuex中的数据
         store.commit('updateUser', {
-          // 载荷数据
+          //   载荷数据
           user: {
-            token: result.data.data.token, // 新token// 最新token
+            // token
+            token: result.data.data.token, // 最新的token
             refresh_token: store.state.user.refresh_token
           }
         })
         // / 提交mutations 更新vuex数据
         //   你之所以会到这个位置 是因为  401, 也就意味着你之前的请求 是错误的
         //  需要把之前错误的请求再次发送出去 用axios 还是 instance呢
-        return instance(error.config)// 相当于 执行之前出现401错误的请求  返回这个请求的目的 是继续执行这个请求执行链下面的内容
+        return instance(error.config) // 相当于 执行之前出现401错误的请求  返回这个请求的目的 是继续执行这个请求执行链下面的内容
       } catch (error) {
         //   如果失败意味着 你尝试去续命 可是续命失败
         // 重新登录 重新登录之前 需要  删除掉 token 因为此时 token失效 refesh_token也失效
         store.commit('delUser')
+        // 重新跳到登录页面
         router.push(path)
       }
     } else {
       // 如果没有`refresh_token`直接跳到登录
-      router.push('./login')
+      // router.push('./login')
       // 如果由于token失效，跳到登录页  当前页面如何 跳转成功后不一定是这个页面
       // / 我们要实现 你 在  A页面发请求 结果失效了  也没有refresh_token,只能回到 login, 你登录之后, 你希望回到A页面
       // 怎么做呢 ? 我们需要在跳到登录页中过程中 ,把当前页面的地址 传给 登录页面
@@ -98,7 +101,7 @@ instance.interceptors.response.use(function (response) {
       // 我们需要获取 当前路由的带参数的地址  router.currentRoute.fullPath(文档)
       // router.currentRoute // 表示当前的路由信息对象 里面包含了路由的地址 和参数
       // 我们需要获取 当前路由的带参数的地址  router.currentRoute.fullPath(文档)
-      store.commit('delUser')// 也要删除token 因为token失效
+      store.commit('delUser') // 也要删除token  因为token失效了
       router.push(path)
     }
   }

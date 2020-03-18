@@ -1,19 +1,20 @@
-// 专门处理用户信息的存储和删除 以及获取 放置在 localStorge
-const USER_TOKEN = 'heima-toutiao-m-94' // 这个key专门用来存储 用户信息
-// 设置用户的信息
+const USER_TOKEN = 'hm-toutiao-m-94' // 专门用来存储用户信息
+
+// 设置用户的token信息
 export function setUser (user) {
-  // user一个是一个对象
-  window.localStorage.setItem(USER_TOKEN, JSON.stringify(user))// user需要转化成字符串
+  // user应该是一个对象
+  window.localStorage.setItem(USER_TOKEN, JSON.stringify(user)) // 对象需要转化成字符串
 }
 
-// 读取用户信息
+// 获取用户的token信息
 export function getUser () {
-  // 讲字符串转化为对象在返回
+  //  将字符串转化转化成对象再返回
   return JSON.parse(window.localStorage.getItem(USER_TOKEN) || '{}') // 短路表达式
-//   如果前面为true 后面不执行 如果前面为false 后面执行
+  // 如果前面为true  后面不执行 如果前面为false 后面才执行
 }
 
-// 删除用户信息
+// 删除用户的token信息
 export function delUser () {
-  localStorage.removeItem(USER_TOKEN)
+  // 删除token信息
+  localStorage.removeItem(USER_TOKEN) // 删除用户信息
 }
