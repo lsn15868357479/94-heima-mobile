@@ -9,7 +9,8 @@
            <van-cell title="标题" value="内容" v-for="item in 20" :key="item"></van-cell>
          </van-cell-group>
        </div> -->
-       <ArticleList></ArticleList>
+       <!-- 需要将频道id传递给每一个列表组件  -->
+       <ArticleList :channels_id="item.id"></ArticleList>
        </van-tab>
     </van-tabs>
     <!-- 放置编辑频道图标 -->

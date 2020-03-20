@@ -54,7 +54,17 @@ export default {
       downLoading: false,
       upLoading: false, // 表示是否开启了上拉加载 默认值false
       finished: false, // 表示 是否已经完成所有数据的加载
-      articles: [] // 文章列表
+      articles: [], // 文章列表
+      timestamp: null// 定义一个时间戳属性 用来储存 历史事件戳
+    }
+  },
+  // props 对象形式 可以约束传入的值 必填传值的类型
+  props: {
+    // key(props属性名):value(对象 配置)
+    channels_id: {
+      required: true, // 必填项 此属性的含义true 要求改props必须传
+      type: Number, // 表示要传入的prop属性的类型
+      default: null// 默认值的意思 加入没有传入prop属性默认值就好采用
     }
   },
   methods: {
