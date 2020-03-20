@@ -92,6 +92,7 @@ export default {
       // setTimeout(() => {
       //   this.finished = true // 表示 数据已经全部加载完毕 没有数据了
       // ,}, 1000) // 等待一秒 然后关闭加载状态
+      await this.$sleep()// 人为控制了 请求的时间
       const data = await getArticles({
         channel_id: this.channel_id,
         timestamp: this.timestamp || Date.now()
@@ -112,6 +113,7 @@ export default {
     // 下拉刷新
     async onRefresh () {
       // 下拉刷新应该发送最新的时间戳
+      await this.$sleep()// 人为控制了 请求的时间
       const data = await getArticles({
         channel_id: this.channel_id,
         timestamp: Date.now()// 永远传最新的时间戳
