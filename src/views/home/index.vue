@@ -3,7 +3,7 @@
     <!-- 放置tabs组件 -->
     <van-tabs>
        <!-- 子标签 title为当前显示内容-->
-       <van-tab :title="`标签${item}`" v-for="item in 10" :key="item">
+       <van-tab :title="`标签${item.name}`" v-for="item in channels" :key="item.id">
        <!-- <div class="scroll-wrapper">
          <van-cell-group>
            <van-cell title="标题" value="内容" v-for="item in 20" :key="item"></van-cell>
@@ -21,13 +21,30 @@
 </template>
 
 <script>
+
 import ArticleList from './components/article-list'
+import { getMyChannels } from '@/api/channels'
 // @ is an alias to /src
 
 export default {
   name: 'Home',
   components: {
     ArticleList
+  },
+  data () {
+    return {
+      channels: []// 接收频道数据
+    }
+  },
+  methods: {
+    async getMyChannels () {
+      const data = await getMyChannels()// 接收返回的数据结构
+      this.channels = data.channels// 讲数据赋值给data中的数据
+    }
+  },
+  created () {
+    // 获取频道数据
+    this.getMyChannels()
   }
 }
 </script>
