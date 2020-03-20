@@ -13,7 +13,7 @@
       <van-list finished-text="数据为0" v-model="upLoading" :finished="finished" @load="onLoad">
         <!-- 循环内容 -->
         <van-cell-group>
-          <van-cell v-for="item in articles" :key="item">
+          <van-cell v-for="item in articles" :key="item.art_id">
             <!-- 放置文章列表循环项  单图 三张图 无图-->
             <div class="article_item">
               <!-- 标题 -->
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { getArticles } from '@/api/articles'
 export default {
   data () {
     return {
@@ -61,29 +62,29 @@ export default {
   // props 对象形式 可以约束传入的值 必填传值的类型
   props: {
     // key(props属性名):value(对象 配置)
-    channels_id: {
+    channel_id: {
       required: true, // 必填项 此属性的含义true 要求改props必须传
       type: Number, // 表示要传入的prop属性的类型
       default: null// 默认值的意思 加入没有传入prop属性默认值就好采用
     }
   },
   methods: {
-    onLoad () {
-      console.log('开始加载数据')
+    async onLoad () {
+      console.log('开始加载文章列表数据')
       // 如果数据加载完毕 应该把finished设置为true
       // 如果超过100条直接关闭
-      if (this.articles.length > 50) {
-        // 如果此时记录以及大于50
-        this.finished = true // 关闭加载
-      } else {
-        const arr = Array.from(
-          Array(20),
-          (value, index) => this.articles.length + index + 1
-        )
-        //  上拉加载不是覆盖之前数据 应该把数据追加的数组的队尾
-        this.articles.push(...arr)
-        this.upLoading = false
-      }
+      // if (this.articles.length > 50) {
+      //   // 如果此时记录以及大于50
+      //   this.finished = true // 关闭加载
+      // } else {
+      //   const arr = Array.from(
+      //     Array(20),
+      //     (value, index) => this.articles.length + index + 1
+      //   )
+      //   //  上拉加载不是覆盖之前数据 应该把数据追加的数组的队尾
+      //   this.articles.push(...arr)
+      //   this.upLoading = false
+      // }
 
       // 下面这么写 依然不能关掉加载状态 为什么 ? 因为关掉之后  检测机制  高度还是不够 还是会开启
       // 如果你有数据 你应该 把数据到加到list中
@@ -91,6 +92,19 @@ export default {
       // setTimeout(() => {
       //   this.finished = true // 表示 数据已经全部加载完毕 没有数据了
       // ,}, 1000) // 等待一秒 然后关闭加载状态
+      const data = await getArticles({ channel_id: this.channel_id, timestamp: this.timestamp || Date.now() }) // this.channel_id指的是 当前的频道id
+      //  获取内容
+      this.articles.push(data.results) // 将数据追加到队尾
+      this.upLoading = false // 关闭加载状态
+      // 将历史时间戳 给timestamp  但是 赋值之前有个判断 需要判断一个历史时间是否为0
+      // 如果历史时间戳为 0 说明 此时已经没有数据了 应该宣布 结束   finished true
+      if (data.pre_timestamp) {
+        // 如果有历史时间戳 表示 还有数据可以继续进行加载
+        this.timestamp = data.pre_timestamp
+      } else {
+        // 表示没有数据可以请求了
+        this.finished = true
+      }
     },
     // 下拉刷新
     onRefresh () {

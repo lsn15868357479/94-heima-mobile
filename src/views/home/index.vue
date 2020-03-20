@@ -10,7 +10,7 @@
          </van-cell-group>
        </div> -->
        <!-- 需要将频道id传递给每一个列表组件  -->
-       <ArticleList :channels_id="item.id"></ArticleList>
+       <ArticleList :channel_id="item.id"></ArticleList>
        </van-tab>
     </van-tabs>
     <!-- 放置编辑频道图标 -->
