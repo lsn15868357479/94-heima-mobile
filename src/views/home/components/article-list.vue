@@ -13,32 +13,32 @@
       <van-list finished-text="数据为0" v-model="upLoading" :finished="finished" @load="onLoad">
         <!-- 循环内容 -->
         <van-cell-group>
-          <van-cell v-for="item in articles" :key="item.art_id">
+          <van-cell v-for="item in articles" :key="item.art_id.toString()">
             <!-- 放置文章列表循环项  单图 三张图 无图-->
             <div class="article_item">
               <!-- 标题 -->
-              <h3 class="van-ellipsis">黑马前端</h3>
+              <h3 class="van-ellipsis">{{item.title}}</h3>
+              <!-- 根据当前的封面类型决定显示单图 三图 还是无图 -->
               <!-- 三图 -->
-              <div class="img_box">
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+              <div class="img_box" v-if="item.cover.type === 3">
+                <van-image class="w33" fit="cover" :src="item.cover.images[0]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[1]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[2]" />
               </div>
-               <!-- 单图 -->
-              <!-- <div class="img_box">
-                <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-              </div> -->
+              <!-- 单图 -->
+              <div class="img_box" v-if="item.cover.type === 1">
+                   <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
+              </div>
 
               <div class="info_box">
-                <span>你像一阵风</span>
-                <span>8评论</span>
-                <span>10分钟前</span>
+                <span>{{item.aut_name}}</span>
+                <span>{{item.comm_count}}</span>
+                <span>{{item.pubdate}}</span>
                 <span class="close">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
             </div>
-
           </van-cell>
         </van-cell-group>
       </van-list>
@@ -56,7 +56,7 @@ export default {
       upLoading: false, // 表示是否开启了上拉加载 默认值false
       finished: false, // 表示 是否已经完成所有数据的加载
       articles: [], // 文章列表
-      timestamp: null// 定义一个时间戳属性 用来储存 历史事件戳
+      timestamp: null // 定义一个时间戳属性 用来储存 历史事件戳
     }
   },
   // props 对象形式 可以约束传入的值 必填传值的类型
@@ -65,7 +65,7 @@ export default {
     channel_id: {
       required: true, // 必填项 此属性的含义true 要求改props必须传
       type: Number, // 表示要传入的prop属性的类型
-      default: null// 默认值的意思 加入没有传入prop属性默认值就好采用
+      default: null // 默认值的意思 加入没有传入prop属性默认值就好采用
     }
   },
   methods: {
@@ -92,7 +92,10 @@ export default {
       // setTimeout(() => {
       //   this.finished = true // 表示 数据已经全部加载完毕 没有数据了
       // ,}, 1000) // 等待一秒 然后关闭加载状态
-      const data = await getArticles({ channel_id: this.channel_id, timestamp: this.timestamp || Date.now() }) // this.channel_id指的是 当前的频道id
+      const data = await getArticles({
+        channel_id: this.channel_id,
+        timestamp: this.timestamp || Date.now()
+      }) // this.channel_id指的是 当前的频道id
       //  获取内容
       this.articles.push(...data.results) // 将数据追加到队尾  这里用...
       this.upLoading = false // 关闭加载状态
