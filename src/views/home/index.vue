@@ -10,7 +10,8 @@
          </van-cell-group>
        </div> -->
        <!-- 需要将频道id传递给每一个列表组件  -->
-       <ArticleList :channel_id="item.id"></ArticleList>
+           <!-- 监听article-list触发的showAction事件 -->
+       <ArticleList  @showAction="openAction"  :channel_id="item.id"></ArticleList>
        </van-tab>
     </van-tabs>
     <!-- 放置编辑频道图标 -->
@@ -18,29 +19,39 @@
       <!-- 放入图标 -->
       <van-icon name="wap-nav" />
     </span>
+    <van-popup v-model="showMoreAction" style="width:80%">
+      <!-- 放置反馈组件 -->
+        <MoreAction />
+    </van-popup>
   </div>
 </template>
 
 <script>
 
 import ArticleList from './components/article-list'
+import MoreAction from './components/more-action'
 import { getMyChannels } from '@/api/channels'
 // @ is an alias to /src
 
 export default {
   name: 'Home',
   components: {
-    ArticleList
+    ArticleList, MoreAction
   },
   data () {
     return {
-      channels: []// 接收频道数据
+      channels: [], // 接收频道数据
+      showMoreAction: false// 是否显示弹层
     }
   },
   methods: {
     async getMyChannels () {
       const data = await getMyChannels()// 接收返回的数据结构
       this.channels = data.channels// 讲数据赋值给data中的数据
+    },
+    // 此方法 会在article-list组件触发 showAction的时候 触发
+    openAction () {
+      this.showMoreAction = true
     }
   },
   created () {

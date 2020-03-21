@@ -34,7 +34,10 @@
                 <span>{{item.aut_name}}</span>
                 <span>{{item.comm_count}}</span>
                 <span>{{item.pubdate | relTime }}</span>
-                <span class="close">
+                  <!-- 此叉号的显示 应该根据当前的登录状态来判断 如果登录了 可以显示 如果没有登录 不显示 -->
+                    <!-- 最原始方式   v-if="$store.state.user.token"-->
+                    <!-- @事件名="逻辑处理"  点击事件中触发一个 显示反馈的事件-->
+                <span @click="$emit('showAction')" class="close" v-if="user.token">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
@@ -47,8 +50,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { getArticles } from '@/api/articles'
 export default {
+  computed: {
+    ...mapState(['user']) // 将user对象映射到计算属性中
+  },
   data () {
     return {
       successText: '',
