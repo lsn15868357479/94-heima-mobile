@@ -21,13 +21,13 @@
               <!-- 根据当前的封面类型决定显示单图 三图 还是无图 -->
               <!-- 三图 -->
               <div class="img_box" v-if="item.cover.type === 3">
-                <van-image class="w33" fit="cover" :src="item.cover.images[0]" />
-                <van-image class="w33" fit="cover" :src="item.cover.images[1]" />
-                <van-image class="w33" fit="cover" :src="item.cover.images[2]" />
+                <van-image lazy-load class="w33" fit="cover" :src="item.cover.images[0]" />
+                <van-image lazy-load class="w33" fit="cover" :src="item.cover.images[1]" />
+                <van-image lazy-load class="w33" fit="cover" :src="item.cover.images[2]" />
               </div>
               <!-- 单图 -->
               <div class="img_box" v-if="item.cover.type === 1">
-                   <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
+                   <van-image lazy-load class="w100" fit="cover" :src="item.cover.images[0]" />
               </div>
 
               <div class="info_box">
