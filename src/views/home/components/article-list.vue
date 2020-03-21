@@ -37,7 +37,7 @@
                   <!-- 此叉号的显示 应该根据当前的登录状态来判断 如果登录了 可以显示 如果没有登录 不显示 -->
                     <!-- 最原始方式   v-if="$store.state.user.token"-->
                     <!-- @事件名="逻辑处理"  点击事件中触发一个 显示反馈的事件-->
-                <span @click="$emit('showAction')" class="close" v-if="user.token">
+                <span @click="$emit('showAction',item.art_id.toString())" class="close" v-if="user.token">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
