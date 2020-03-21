@@ -22,7 +22,11 @@
     <van-popup v-model="showMoreAction" style="width:80%">
       <!-- 放置反馈组件 -->
           <!-- 应该在此位置监听 more-action触发的事件 -->
-        <MoreAction @dislike="dislikeArticle" />
+           <!-- 不喜欢文章 和 举报文章 用一个方法 -->
+        <!-- @事件名="方法名"  @事件名="方法名()" @事件名="方法名($event 参数)" @事件名="逻辑" -->
+        <!-- $event 是事件参数 在h5标签中 dom元素的事件参数  自定义事件中$event 就是自定义事件传出的第一个参数 -->
+        <!-- <MoreAction @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport($event,'report')" /> -->
+        <MoreAction @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)" />
     </van-popup>
   </div>
 </template>
@@ -32,7 +36,7 @@
 import ArticleList from './components/article-list'
 import MoreAction from './components/more-action'
 import { getMyChannels } from '@/api/channels'
-import { dislikeArticle } from '@/api/articles' // 不感兴趣
+import { dislikeArticle, reportArticle } from '@/api/articles' // 不感兴趣
 import eventbus from '@/utils/eventbus'// 公共事件处理器
 // @ is an alias to /src
 
@@ -60,12 +64,13 @@ export default {
       // 应该把id存起来
       this.articleId = artId
     },
-    async dislikeArticle () {
+    // operateType 是操作类型 如果是dislike 就是不喜欢 如果是 report 就是 举报
+    async dislikeOrReport  (operateType, type) {
       // 调用不给兴趣接口
       try {
-        await dislikeArticle({
-          target: this.articleId
-        })
+        operateType === 'dislike' ? await dislikeArticle({
+          target: this.articleId // 不感兴趣的id
+        }) : await reportArticle({ target: this.articleId, type }) //  这里的type怎么办 ?????? 通过$event传出来
         // await下方的逻辑 是 resolve(成功)之后 的
         this.$gnotify({
           type: 'success',
@@ -83,6 +88,25 @@ export default {
         })
       }
     }
+    // // 举报文章
+    // async reportArticle (type) {
+    //   try {
+    //     await reportArticle({ target: this.articleId, type })
+    //     this.$gnotify({
+    //       type: 'success',
+    //       message: '操作成功'
+    //     })
+    //     // await下方认为举报成功
+    //     // 同样的也要讲举报的文章删除掉
+    //     eventbus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id)
+    //     // 监听了这个事件组件 就要根据id来删除数据
+    //     this.showMoreAction = false// 此时关闭弹层
+    //   } catch (error) {
+    //     this.$gnotify({
+    //       message: '操作失败'
+    //     })
+    //   }
+    // }
   },
   created () {
     // 获取频道数据
