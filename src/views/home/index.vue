@@ -21,7 +21,8 @@
     </span>
     <van-popup v-model="showMoreAction" style="width:80%">
       <!-- 放置反馈组件 -->
-        <MoreAction />
+          <!-- 应该在此位置监听 more-action触发的事件 -->
+        <MoreAction @dislike="dislikeArticle" />
     </van-popup>
   </div>
 </template>
@@ -31,6 +32,7 @@
 import ArticleList from './components/article-list'
 import MoreAction from './components/more-action'
 import { getMyChannels } from '@/api/channels'
+import { dislikeArticle } from '@/api/articles' // 不感兴趣
 // @ is an alias to /src
 
 export default {
@@ -55,6 +57,23 @@ export default {
       this.showMoreAction = true
       // 应该把id存起来
       this.articleId = artId
+    },
+    async dislikeArticle () {
+      // 调用不给兴趣接口
+      try {
+        await dislikeArticle({
+          target: this.articleId
+        })
+        // await下方的逻辑 是 resolve(成功)之后 的
+        this.$gnotify({
+          type: 'success',
+          message: '操作成功'
+        })
+      } catch (error) {
+        this.$gnotify({
+          message: '操作失败'
+        })
+      }
     }
   },
   created () {
