@@ -3,7 +3,7 @@
     <!-- 放置tabs组件  默认绑定激活页签-->
     <van-tabs v-model="activeIndex">
        <!-- 子标签 title为当前显示内容-->
-       <van-tab :title="`标签${item.name}`" v-for="item in channels" :key="item.id">
+       <van-tab :title="`${item.name}`" v-for="item in channels" :key="item.id">
        <!-- <div class="scroll-wrapper">
          <van-cell-group>
            <van-cell title="标题" value="内容" v-for="item in 20" :key="item"></van-cell>
@@ -32,8 +32,8 @@
     <van-action-sheet :round="false"  v-model="showChannelEdit" title="编辑频道">
       <!-- 放置频道编辑组件 -->
        <!-- 此时将父组件的数据 传递给了 子组件 -->
-      <ChannelEdit :channels="channels"></ChannelEdit>
-    </van-action-sheet>
+        <ChannelEdit @selectChannel="selectChannel" :channels="channels"  ></ChannelEdit>
+      </van-action-sheet>selectChannel
   </div>
 </template>
 
@@ -65,6 +65,17 @@ export default {
     async getMyChannels () {
       const data = await getMyChannels()// 接收返回的数据结构
       this.channels = data.channels// 讲数据赋值给data中的数据
+    },
+    //  当子组件触发 selectChannel时 触发该方法
+    // selectChannel (id) {
+    // //   // 拿到id之后  应该找到id所对应的频道的索引
+    //   const index = this.channels.findIndex(item => item.id === id) // 获取索引
+    //   this.activeIndex = index // 将对应频道的索引 设置给当前激活的 标签
+    //   this.showChannelEdit = false // 关闭弹层
+    // },
+    selectChannel (index) {
+      this.activeIndex = index // 将对应频道的索引 设置给当前激活的 标签
+      this.showChannelEdit = false // 关闭弹层
     },
     // 此方法 会在article-list组件触发 showAction的时候 触发
     openAction (artId) {

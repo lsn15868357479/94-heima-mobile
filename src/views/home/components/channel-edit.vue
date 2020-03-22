@@ -11,7 +11,8 @@
       <!-- 我的频道循环选项 -->
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="(item,index) in channels" :key="item.id">
-          <span class="f12">{{item.name}}</span>
+        <!-- <span @click="$emit('selectChannel', item.id)" class="f12">{{ item.name }}</span> -->
+           <span @click="$emit('selectChannel', index)" class="f12">{{ item.name }}</span>
             <!--叉号标签 应该 在进入编辑状态时显示 应该在 退出编辑状态时不显示 -->
           <van-icon v-if="index !==0 && editing" class="btn" name="cross"></van-icon>
         </van-grid-item>
@@ -24,7 +25,7 @@
       <div class="tit">可选频道：</div>
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="item in optionalChannels" :key="item.id">
-          <span class="f12">{{item.name}}</span>
+          <span class="f12">{{ item.name }}</span>
           <van-icon class="btn" name="plus"></van-icon>
         </van-grid-item>
       </van-grid>
