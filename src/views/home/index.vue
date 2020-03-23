@@ -33,7 +33,7 @@
       <!-- 放置频道编辑组件 -->
        <!-- 此时将父组件的数据 传递给了 子组件 -->
         <ChannelEdit @addChannel="addChannel" @delChannel="delChannel" :activeIndex="activeIndex" @selectChannel="selectChannel" :channels="channels"  ></ChannelEdit>
-      </van-action-sheet>selectChannel
+      </van-action-sheet>
   </div>
 </template>
 
