@@ -14,7 +14,8 @@
         <!-- <span @click="$emit('selectChannel', item.id)" class="f12">{{ item.name }}</span> -->
            <span @click="$emit('selectChannel', index)" :class="{red:index === activeIndex}">{{ item.name }}</span>
             <!--叉号标签 应该 在进入编辑状态时显示 应该在 退出编辑状态时不显示 -->
-          <van-icon v-if="index !==0 && editing" class="btn" name="cross"></van-icon>
+          <!-- 点击叉号应该调用父组件的删除方法  传出点前要删除的id-->
+          <van-icon @click="$emit('delChannel',item.id)" v-if="index !==0 && editing" class="btn" name="cross"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
