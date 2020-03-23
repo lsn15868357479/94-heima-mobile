@@ -32,7 +32,7 @@
     <van-action-sheet :round="false"  v-model="showChannelEdit" title="编辑频道">
       <!-- 放置频道编辑组件 -->
        <!-- 此时将父组件的数据 传递给了 子组件 -->
-        <ChannelEdit @delChannel="delChannel" :activeIndex="activeIndex" @selectChannel="selectChannel" :channels="channels"  ></ChannelEdit>
+        <ChannelEdit @addChannel="addChannel" @delChannel="delChannel" :activeIndex="activeIndex" @selectChannel="selectChannel" :channels="channels"  ></ChannelEdit>
       </van-action-sheet>selectChannel
   </div>
 </template>
@@ -41,7 +41,7 @@
 
 import ArticleList from './components/article-list'
 import MoreAction from './components/more-action'
-import { getMyChannels, delChannel } from '@/api/channels'
+import { getMyChannels, delChannel, addChannel } from '@/api/channels'
 import { dislikeArticle, reportArticle } from '@/api/articles' // 不感兴趣
 import eventbus from '@/utils/eventbus'// 公共事件处理器
 import ChannelEdit from './components/channel-edit' // 引入编辑频道组件
@@ -62,6 +62,11 @@ export default {
     }
   },
   methods: {
+    async addChannel (channel) {
+      // 调用api将频道写入缓存 成功之后 要将数据调价到data数据
+      await addChannel(channel)// 传入参数 写入缓存
+      this.channels.push(channel)// 将添加的channel添加到 data中的channels中
+    },
     async delChannel (id) {
       try {
         await delChannel(id)// 调用api方法
