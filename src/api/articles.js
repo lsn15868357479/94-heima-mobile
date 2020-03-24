@@ -33,3 +33,12 @@ export function getSuggestion (params) {
     params // query参数放置在 params中s
   })
 }
+// 获取文章搜索的结果
+//   params是get参数
+//   data是body参数
+export function searchArticle (params) {
+  return request({
+    url: '/search',
+    params // 关键词 及分页信息
+  })
+}
